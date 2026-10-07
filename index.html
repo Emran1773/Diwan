@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <title>ديواني | أبيات الشعر</title>
+
+  <link rel="icon" type="image/jpeg" href="icon.JPG">
+  <link rel="apple-touch-icon" href="icon.JPG">
+
+  <meta name="theme-color" content="#211a14">
+  <meta name="description" content="ديواني — تطبيق لحفظ أبيات الشعر وتنظيمها ومراجعتها.">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f4ecdc;
+      --surface: #fffaf0;
+      --surface-2: #eadcc2;
+      --ink: #241b15;
+      --muted: #796b5b;
+      --gold: #a9823b;
+      --gold-dark: #806329;
+      --border: rgba(36, 27, 21, .12);
+      --shadow: 0 12px 35px rgba(36, 27, 21, .09);
+      --radius: 22px;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(169,130,59,.10), transparent 30%),
+        linear-gradient(135deg, #f8f0e1, #eee2ca);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", "Noto Naskh Arabic", serif;
+      padding-bottom: 100px;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+    }
+
+    .app {
+      width: min(1100px, 100%);
+      margin: auto;
+      padding: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .brand img {
+      width: 58px;
+      height: 58px;
+      border-radius: 17px;
+      object-fit: cover;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(36,27,21,.08);
+    }
+
+    .brand h1 {
+      font-size: clamp(27px, 6vw, 40px);
+      line-height: 1;
+    }
+
+    .brand p {
+      color: var(--muted);
+      margin-top: 7px;
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,250,240,.75);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      font-size: 19px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #2b211a, #463426);
+      color: #fffaf0;
+      border-radius: 30px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "ديواني";
+      position: absolute;
+      left: -25px;
+      bottom: -35px;
+      font-size: 100px;
+      opacity: .035;
+      transform: rotate(-8deg);
+    }
+
+    .hero h2 {
+      font-size: clamp(25px, 5vw, 38px);
+      margin-bottom: 9px;
+    }
+
+    .hero p {
+      color: #d9ccb9;
+      line-height: 1.8;
+      max-width: 650px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .primary-btn {
+      background: var(--gold);
+      color: white;
+      padding: 13px 20px;
+      border-radius: 14px;
+      font-weight: bold;
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,.09);
+      color: white;
+      border: 1px solid rgba(255,255,255,.16);
+      padding: 13px 20px;
+      border-radius: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: rgba(255,250,240,.82);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 19px;
+      box-shadow: 0 5px 18px rgba(36,27,21,.04);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 27px;
+      color: var(--gold-dark);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 15px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      outline: none;
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .search input:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(169,130,59,.10);
+    }
+
+    .filter {
+      padding: 0 15px;
+      min-height: 50px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .poems {
+      display: grid;
+      gap: 14px;
+    }
+
+    .poem-card {
+      background: rgba(255,250,240,.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 7px 24px rgba(36,27,21,.05);
+      transition: .2s ease;
+    }
+
+    .poem-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .poem-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .poem-text {
+      font-size: clamp(21px, 4vw, 28px);
+      line-height: 2;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+
+    .poem-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tag {
+      background: var(--surface-2);
+      color: var(--gold-dark);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn {
+      background: #eee3cf;
+      color: var(--ink);
+      border-radius: 11px;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+
+    .favorite {
+      background: transparent;
+      color: #a9823b;
+      font-size: 23px;
+      padding: 2px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 55px 20px;
+      color: var(--muted);
+      background: rgba(255,250,240,.65);
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+    }
+
+    .empty-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,14,10,.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 100;
+      backdrop-filter: blur(7px);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-box {
+      width: min(600px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-radius: 27px;
+      padding: 24px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.25);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-head h3 {
+      font-size: 25px;
+    }
+
+    .close {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #eee3cf;
+      color: var(--ink);
+      font-size: 20px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 15px;
+      background: #fffdf8;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 2;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .save-btn {
+      flex: 1;
+      background: var(--gold);
+      color: white;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: bold;
+    }
+
+    .cancel-btn {
+      padding: 14px 20px;
+      border-radius: 14px;
+      background: #eee3cf;
+      color: var(--ink);
+    }
+
+    .review {
+      text-align: center;
+    }
+
+    .review .review-text {
+      font-size: clamp(24px, 5vw, 35px);
+      line-height: 2;
+      padding: 25px 10px;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .review-answer {
+      display: none;
+      background: #efe2c9;
+      padding: 18px;
+      border-radius: 17px;
+      line-height: 2;
+      margin-bottom: 14px;
+      font-size: 19px;
+    }
+
+    .review-answer.show {
+      display: block;
+    }
+
+    .review-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(600px, calc(100% - 24px));
+      background: rgba(43,33,26,.94);
+      backdrop-filter: blur(15px);
+      border-radius: 22px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 6px;
+      z-index: 50;
+      box-shadow: 0 15px 40px rgba(0,0,0,.2);
+    }
+
+    .nav-btn {
+      color: #d8cdbd;
+      background: transparent;
+      border-radius: 16px;
+      padding: 10px 7px;
+      font-size: 12px;
+    }
+
+    .nav-btn span {
+      display: block;
+      font-size: 19px;
+      margin-bottom: 2px;
+    }
+
+    .nav-btn.active {
+      background: rgba(169,130,59,.25);
+      color: #fff;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #2b211a;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s;
+      z-index: 200;
+      white-space: nowrap;
+      max-width: calc(100% - 30px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 13px;
+      }
+
+      .brand img {
+        width: 50px;
+        height: 50px;
+      }
+
+      .stats {
+        gap: 8px;
+      }
+
+      .stat {
+        padding: 14px;
+      }
+
+      .stat strong {
+        font-size: 23px;
+      }
+
+      .hero {
+        padding: 23px;
+        border-radius: 25px;
+      }
+
+      .poem-card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header>
+      <div class="brand">
+        <img src="icon.JPG" alt="ديواني">
+        <div>
+          <h1>ديواني</h1>
+          <p>رفيقك في حفظ أبيات الشعر</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="exportBtn" title="تصدير">↥</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h2>احفظ ما أحببت من الشعر.</h2>
+      <p>
+        اجمع أبياتك المفضلة في ديوانك الخاص، ونظّمها حسب الشعراء والموضوعات،
+        ثم راجعها حتى تثبت في ذاكرتك.
+      </p>
+
+      <div class="hero-actions">
+        <button class="primary-btn" id="addHeroBtn">+ أضف بيتًا</button>
+        <button class="secondary-btn" id="reviewHeroBtn">ابدأ المراجعة</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <strong id="poemCount">0</strong>
+        <span>بيت محفوظ</span>
+      </div>
+
+      <div class="stat">
+        <strong id="poetCount">0</strong>
+        <span>شاعر</span>
+      </div>
+
+      <div class="stat">
+        <strong id="favoriteCount">0</strong>
+        <span>مفضلة</span>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="search">
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="ابحث في أبياتك..."
+          autocomplete="off"
+        >
+      </div>
+
+      <select class="filter" id="categoryFilter">
+        <option value="all">كل التصنيفات</option>
+        <option value="حكمة">حكمة</option>
+        <option value="فخر">فخر</option>
+        <option value="حماسة">حماسة</option>
+        <option value="أدب">أدب</option>
+        <option value="رثاء">رثاء</option>
+        <option value="غزل">غزل</option>
+        <option value="وصف">وصف</option>
+        <option value="متنوع">متنوع</option>
+      </select>
+    </section>
+
+    <section id="poemsContainer" class="poems"></section>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-section="home">
+      <span>⌂</span>
+      الديوان
+    </button>
+
+    <button class="nav-btn" id="addNavBtn">
+      <span>＋</span>
+      إضافة
+    </button>
+
+    <button class="nav-btn" id="reviewNavBtn">
+      <span>↻</span>
+      مراجعة
+    </button>
+  </nav>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal" id="poemModal">
+    <div class="modal-box">
+
+      <div class="modal-head">
+        <h3 id="modalTitle">إضافة بيت</h3>
+        <button class="close" id="closeModal">×</button>
+      </div>
+
+      <form id="poemForm">
+
+        <div class="field">
+          <label for="poemText">البيت</label>
+          <textarea
+            id="poemText"
+            required
+            placeholder="اكتب البيت الشعري هنا..."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="poet">الشاعر</label>
+          <input
+            id="poet"
+            type="text"
+            placeholder="اسم الشاعر"
+          >
+        </div>
+
+        <div class="field">
+          <label for="poemTitle">القصيدة</label>
+          <input
+            id="poemTitle"
+            type="text"
+            placeholder="اسم القصيدة إن وُجد"
+          >
+        </div>
+
+        <div class="field">
+          <label for="category">التصنيف</label>
+          <select id="category">
+            <option value="حكمة">حكمة</option>
+            <option value="فخر">فخر</option>
+            <option value="حماسة">حماسة</option>
+            <option value="أدب">أدب</option>
+            <option value="رثاء">رثاء</option>
+            <option value="غزل">غزل</option>
+            <option value="وصف">وصف</option>
+            <option value="متنوع">متنوع</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="save-btn">حفظ البيت</button>
+          <button type="button" class="cancel-btn" id="cancelModal">إلغاء</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div class="modal" id="reviewModal">
+    <div class="modal-box review">
+
+      <div class="modal-head">
+        <h3>مراجعة الأبيات</h3>
+        <button class="close" id="closeReview">×</button>
+      </div>
+
+      <div id="reviewContent">
+        <div class="review-text" id="reviewText"></div>
+
+        <div class="review-answer" id="reviewAnswer"></div>
+
+        <div class="review-buttons">
+          <button class="secondary-btn" id="showAnswer">
+            إظهار البيت
+          </button>
+
+          <button class="primary-btn" id="nextReview">
+            بيت آخر
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "diwani_poems_v1";
+
+    let poems = [];
+    let editingId = null;
+    let reviewPool = [];
+    let reviewIndex = 0;
+
+    const $ = id => document.getElementById(id);
+
+    function loadPoems() {
+      try {
+        poems = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch {
+        poems = [];
+      }
+
+      if (!Array.isArray(poems)) poems = [];
+    }
+
+    function savePoems() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(poems));
+    }
+
+    function escapeHTML(value = "") {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function updateStats() {
+      $("poemCount").textContent = poems.length;
+
+      const poets = new Set(
+        poems
+          .map(p => p.poet?.trim())
+          .filter(Boolean)
+      );
+
+      $("poetCount").textContent = poets.size;
+
+      $("favoriteCount").textContent =
+        poems.filter(p => p.favorite).length;
+    }
+
+    function renderPoems() {
+      const query = $("searchInput").value.trim().toLowerCase();
+      const category = $("categoryFilter").value;
+
+      const filtered = poems.filter(poem => {
+        const text = [
+          poem.text,
+          poem.poet,
+          poem.title,
+          poem.category
+        ].join(" ").toLowerCase();
+
+        const matchesSearch = !query || text.includes(query);
+        const matchesCategory =
+          category === "all" || poem.category === category;
+
+        return matchesSearch && matchesCategory;
+      });
+
+      const container = $("poemsContainer");
+
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">📜</div>
+            <h3>${poems.length ? "لا توجد نتائج" : "ديوانك لا يزال فارغًا"}</h3>
+            <p>
+              ${poems.length
+                ? "جرّب تغيير كلمة البحث أو التصنيف."
+                : "ابدأ بإضافة أول بيت تحفظه."}
+            </p>
+          </div>
+        `;
+        updateStats();
+        return;
+      }
+
+      container.innerHTML = filtered.map(poem => `
+        <article class="poem-card">
+          <div class="poem-top">
+            <div class="poem-text">${escapeHTML(poem.text)}</div>
+
+            <button
+              class="favorite"
+              data-action="favorite"
+              data-id="${poem.id}"
+              title="المفضلة"
+            >
+              ${poem.favorite ? "★" : "☆"}
+            </button>
+          </div>
+
+          <div class="poem-meta">
+            ${poem.poet
+              ? `<span>— ${escapeHTML(poem.poet)}</span>`
+              : ""}
+
+            ${poem.title
+              ? `<span>• ${escapeHTML(poem.title)}</span>`
+              : ""}
+
+            ${poem.category
+              ? `<span class="tag">${escapeHTML(poem.category)}</span>`
+              : ""}
+          </div>
+
+          <div class="card-actions">
+            <button class="small-btn" data-action="review" data-id="${poem.id}">
+              مراجعة
+            </button>
+
+            <button class="small-btn" data-action="copy" data-id="${poem.id}">
+              نسخ
+            </button>
+
+            <button class="small-btn" data-action="edit" data-id="${poem.id}">
+              تعديل
+            </button>
+
+            <button class="small-btn" data-action="delete" data-id="${poem.id}">
+              حذف
+            </button>
+          </div>
+        </article>
+      `).join("");
+
+      updateStats();
+    }
+
+    function openModal(id = null) {
+      editingId = id;
+
+      if (id) {
+        const poem = poems.find(p => p.id === id);
+        if (!poem) return;
+
+        $("modalTitle").textContent = "تعديل البيت";
+        $("poemText").value = poem.text || "";
+        $("poet").value = poem.poet || "";
+        $("poemTitle").value = poem.title || "";
+        $("category").value = poem.category || "متنوع";
+      } else {
+        $("modalTitle").textContent = "إضافة بيت";
+        $("poemForm").reset();
+        $("category").value = "حكمة";
+      }
+
+      $("poemModal").classList.add("active");
+
+      setTimeout(() => $("poemText").focus(), 100);
+    }
+
+    function closeModal() {
+      $("poemModal").classList.remove("active");
+      editingId = null;
+    }
+
+    function addOrUpdatePoem(event) {
+      event.preventDefault();
+
+      const text = $("poemText").value.trim();
+      const poet = $("poet").value.trim();
+      const title = $("poemTitle").value.trim();
+      const category = $("category").value;
+
+      if (!text) return;
+
+      if (editingId) {
+        const index = poems.findIndex(p => p.id === editingId);
+
+        if (index !== -1) {
+          poems[index] = {
+            ...poems[index],
+            text,
+            poet,
+            title,
+            category
+          };
+        }
+
+        showToast("تم تعديل البيت");
+      } else {
+        poems.unshift({
+          id: Date.now().toString(),
+          text,
+          poet,
+          title,
+          category,
+          favorite: false,
+          createdAt: new Date().toISOString()
+        });
+
+        showToast("تم حفظ البيت");
+      }
+
+      savePoems();
+      renderPoems();
+      closeModal();
+    }
+
+    function deletePoem(id) {
+      const poem = poems.find(p => p.id === id);
+      if (!poem) return;
+
+      if (!confirm("هل تريد حذف هذا البيت؟")) return;
+
+      poems = poems.filter(p => p.id !== id);
+
+      savePoems();
+      renderPoems();
+      showToast("تم حذف البيت");
+    }
+
+    function toggleFavorite(id) {
+      const poem = poems.find(p => p.id === id);
+      if (!poem) return;
+
+      poem.favorite = !poem.favorite;
+
+      savePoems();
+      renderPoems();
+
+      showToast(
+        poem.favorite
+          ? "أضيف إلى المفضلة"
+          : "أزيل من المفضلة"
+      );
+    }
+
+    async function copyPoem(id) {
+      const poem = poems.find(p => p.id === id);
+      if (!poem) return;
+
+      const text = [
+        poem.text,
+        poem.poet ? `— ${poem.poet}` : ""
+      ].filter(Boolean).join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("تم نسخ البيت");
+      } catch {
+        showToast("تعذر النسخ");
+      }
+    }
+
+    function openReview(singleId = null) {
+      if (singleId) {
+        const poem = poems.find(p => p.id === singleId);
+        reviewPool = poem ? [poem] : [];
+      } else {
+        reviewPool = [...poems].sort(() => Math.random() - 0.5);
+      }
+
+      reviewIndex = 0;
+
+      $("reviewModal").classList.add("active");
+
+      showReviewPoem();
+    }
+
+    function showReviewPoem() {
+      if (!reviewPool.length) {
+        $("reviewContent").innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">📖</div>
+            <h3>لا توجد أبيات للمراجعة</h3>
+            <p>أضف بعض الأبيات أولًا.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (reviewIndex >= reviewPool.length) {
+        reviewIndex = 0;
+      }
+
+      const poem = reviewPool[reviewIndex];
+
+      $("reviewText").textContent = "أكمل البيت من ذاكرتك…";
+      $("reviewAnswer").textContent = poem.text;
+      $("reviewAnswer").classList.remove("show");
+
+      $("showAnswer").textContent = "إظهار البيت";
+    }
+
+    function closeReview() {
+      $("reviewModal").classList.remove("active");
+    }
+
+    function showAnswer() {
+      const answer = $("reviewAnswer");
+
+      answer.classList.toggle("show");
+
+      $("showAnswer").textContent =
+        answer.classList.contains("show")
+          ? "إخفاء البيت"
+          : "إظهار البيت";
+    }
+
+    function nextReview() {
+      reviewIndex++;
+      showReviewPoem();
+    }
+
+    function exportData() {
+      if (!poems.length) {
+        showToast("لا توجد أبيات لتصديرها");
+        return;
+      }
+
+      const data = JSON.stringify(poems, null, 2);
+      const blob = new Blob([data], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = "diwani-poems.json";
+      a.click();
+
+      URL.revokeObjectURL(url);
+
+      showToast("تم تصدير الديوان");
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      clearTimeout(window.__toastTimer);
+
+      window.__toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+
+    $("poemForm").addEventListener("submit", addOrUpdatePoem);
+
+    $("addHeroBtn").addEventListener("click", () => openModal());
+    $("addNavBtn").addEventListener("click", () => openModal());
+
+    $("reviewHeroBtn").addEventListener("click", () => openReview());
+    $("reviewNavBtn").addEventListener("click", () => openReview());
+
+    $("closeModal").addEventListener("click", closeModal);
+    $("cancelModal").addEventListener("click", closeModal);
+
+    $("closeReview").addEventListener("click", closeReview);
+
+    $("showAnswer").addEventListener("click", showAnswer);
+    $("nextReview").addEventListener("click", nextReview);
+
+    $("exportBtn").addEventListener("click", exportData);
+
+    $("searchInput").addEventListener("input", renderPoems);
+    $("categoryFilter").addEventListener("change", renderPoems);
+
+    $("poemsContainer").addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      const id = button.dataset.id;
+      const action = button.dataset.action;
+
+      if (action === "favorite") toggleFavorite(id);
+      if (action === "copy") copyPoem(id);
+      if (action === "delete") deletePoem(id);
+      if (action === "edit") openModal(id);
+      if (action === "review") openReview(id);
+    });
+
+    $("poemModal").addEventListener("click", event => {
+      if (event.target === $("poemModal")) {
+        closeModal();
+      }
+    });
+
+    $("reviewModal").addEventListener("click", event => {
+      if (event.target === $("reviewModal")) {
+        closeReview();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeModal();
+        closeReview();
+      }
+    });
+
+    loadPoems();
+    renderPoems();
+  </script>
+
+</body>
+</html>
